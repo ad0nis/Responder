@@ -66,11 +66,11 @@ class Settings:
     def populate(self, options):
 
         if options.Interface is None and utils.IsOsX() is False:
-            print utils.color("Error: -I <if> mandatory option is missing", 1)
+            print(utils.color("Error: -I <if> mandatory option is missing", 1))
             sys.exit(-1)
 
         if options.Interface == "ALL" and options.OURIP == None:
-            print utils.color("Error: -i is missing.\nWhen using -I ALL you need to provide your current ip address", 1)
+            print(utils.color("Error: -i is missing.\nWhen using -I ALL you need to provide your current ip address", 1))
             sys.exit(-1)
 
         # Config parsing
@@ -135,10 +135,10 @@ class Settings:
         self.HtmlToInject     = config.get('HTTP Server', 'HtmlToInject')
 
         if not os.path.exists(self.Html_Filename):
-            print utils.color("/!\ Warning: %s: file not found" % self.Html_Filename, 3, 1)
+            print(utils.color("/!\ Warning: %s: file not found" % self.Html_Filename, 3, 1))
 
         if not os.path.exists(self.Exe_Filename):
-            print utils.color("/!\ Warning: %s: file not found" % self.Exe_Filename, 3, 1)
+            print(utils.color("/!\ Warning: %s: file not found" % self.Exe_Filename, 3, 1))
 
         # SSL Options
         self.SSLKey  = config.get('HTTPS Server', 'SSLKey')
@@ -199,7 +199,7 @@ class Settings:
                    self.NumChal = "random"
 
         if len(self.NumChal) is not 16 and not "random":
-            print utils.color("[!] The challenge must be exactly 16 chars long.\nExample: 1122334455667788", 1)
+            print(utils.color("[!] The challenge must be exactly 16 chars long.\nExample: 1122334455667788", 1))
             sys.exit(-1)
 
         self.Challenge = ""
@@ -254,7 +254,7 @@ class Settings:
             utils.DumpConfig(self.ResponderConfigDump, Message)
             utils.DumpConfig(self.ResponderConfigDump,str(self))
         except AttributeError as ex:
-            print "Missing Module:", ex
+            print("Missing Module:", ex)
             pass
 
 def init():
