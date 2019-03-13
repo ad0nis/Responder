@@ -45,10 +45,10 @@ parser.add_option('-v','--verbose',        action="store_true", help="Increase v
 options, args = parser.parse_args()
 
 if not os.geteuid() == 0:
-    print color("[!] Responder must be run as root.")
+    print(color("[!] Responder must be run as root."))
     sys.exit(-1)
 elif options.OURIP is None and IsOsX() is True:
-    print "\n\033[1m\033[31mOSX detected, -i mandatory option is missing\033[0m\n"
+    print("\n\033[1m\033[31mOSX detected, -i mandatory option is missing\033[0m\n")
     parser.print_help()
     exit(-1)
 
@@ -60,7 +60,7 @@ StartupMessage()
 settings.Config.ExpandIPRanges()
 
 if settings.Config.AnalyzeMode:
-    print color('[i] Responder is in analyze mode. No NBT-NS, LLMNR, MDNS requests will be poisoned.', 3, 1)
+    print(color('[i] Responder is in analyze mode. No NBT-NS, LLMNR, MDNS requests will be poisoned.', 3, 1))
 
 #Create the DB, before we start Responder.
 CreateResponderDb()
@@ -150,7 +150,7 @@ def serve_thread_udp_broadcast(host, port, handler):
         server = ThreadingUDPServer((host, port), handler)
         server.serve_forever()
     except:
-        print color("[!] ", 1, 1) + "Error starting UDP server on port " + str(port) + ", check permissions or other servers running."
+        print(color("[!] ", 1, 1) + "Error starting UDP server on port " + str(port) + ", check permissions or other servers running.")
 
 def serve_NBTNS_poisoner(host, port, handler):
     serve_thread_udp_broadcast(host, port, handler)
@@ -160,7 +160,7 @@ def serve_MDNS_poisoner(host, port, handler):
         server = ThreadingUDPMDNSServer((host, port), handler)
         server.serve_forever()
     except:
-        print color("[!] ", 1, 1) + "Error starting UDP server on port " + str(port) + ", check permissions or other servers running."
+        print(color("[!] ", 1, 1) + "Error starting UDP server on port " + str(port) + ", check permissions or other servers running.")
 
 def serve_LLMNR_poisoner(host, port, handler):
     try:
@@ -168,7 +168,7 @@ def serve_LLMNR_poisoner(host, port, handler):
         server.serve_forever()
     except:
                 raise
-        print color("[!] ", 1, 1) + "Error starting UDP server on port " + str(port) + ", check permissions or other servers running."
+        print(color("[!] ", 1, 1) + "Error starting UDP server on port " + str(port) + ", check permissions or other servers running.")
 
 def serve_thread_udp(host, port, handler):
     try:
@@ -179,7 +179,7 @@ def serve_thread_udp(host, port, handler):
             server = ThreadingUDPServer((host, port), handler)
             server.serve_forever()
     except:
-        print color("[!] ", 1, 1) + "Error starting UDP server on port " + str(port) + ", check permissions or other servers running."
+        print(color("[!] ", 1, 1) + "Error starting UDP server on port " + str(port) + ", check permissions or other servers running.")
 
 def serve_thread_tcp(host, port, handler):
     try:
@@ -190,7 +190,7 @@ def serve_thread_tcp(host, port, handler):
             server = ThreadingTCPServer((host, port), handler)
             server.serve_forever()
     except:
-        print color("[!] ", 1, 1) + "Error starting TCP server on port " + str(port) + ", check permissions or other servers running."
+        print(color("[!] ", 1, 1) + "Error starting TCP server on port " + str(port) + ", check permissions or other servers running.")
 
 def serve_thread_tcp_auth(host, port, handler):
     try:
@@ -201,7 +201,7 @@ def serve_thread_tcp_auth(host, port, handler):
             server = ThreadingTCPServerAuth((host, port), handler)
             server.serve_forever()
     except:
-        print color("[!] ", 1, 1) + "Error starting TCP server on port " + str(port) + ", check permissions or other servers running."
+        print(color("[!] ", 1, 1) + "Error starting TCP server on port " + str(port) + ", check permissions or other servers running.")
 
 def serve_thread_SSL(host, port, handler):
     try:
@@ -218,7 +218,7 @@ def serve_thread_SSL(host, port, handler):
             server.socket = ssl.wrap_socket(server.socket, certfile=cert, keyfile=key, server_side=True)
             server.serve_forever()
     except:
-        print color("[!] ", 1, 1) + "Error starting SSL server on port " + str(port) + ", check permissions or other servers running."
+        print(color("[!] ", 1, 1) + "Error starting SSL server on port " + str(port) + ", check permissions or other servers running.")
 
 def main():
     try:
@@ -302,7 +302,7 @@ def main():
             thread.setDaemon(True)
             thread.start()
 
-        print color('[+]', 2, 1) + " Listening for events..."
+        print(color('[+]', 2, 1) + " Listening for events...")
 
         while True:
             time.sleep(1)
