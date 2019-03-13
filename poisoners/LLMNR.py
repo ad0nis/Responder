@@ -37,9 +37,9 @@ def IsICMPRedirectPlausible(IP):
             dnsip.extend(ip[1:])
     for x in dnsip:
         if x != "127.0.0.1" and IsOnTheSameSubnet(x,IP) is False:
-            print color("[Analyze mode: ICMP] You can ICMP Redirect on this network.", 5)
-            print color("[Analyze mode: ICMP] This workstation (%s) is not on the same subnet than the DNS server (%s)." % (IP, x), 5)
-            print color("[Analyze mode: ICMP] Use `python tools/Icmp-Redirect.py` for more details.", 5)
+            print(color("[Analyze mode: ICMP] You can ICMP Redirect on this network.", 5))
+            print(color("[Analyze mode: ICMP] This workstation (%s) is not on the same subnet than the DNS server (%s)." % (IP, x), 5))
+            print(color("[Analyze mode: ICMP] Use `python tools/Icmp-Redirect.py` for more details.", 5))
 
 if settings.Config.AnalyzeMode:
     IsICMPRedirectPlausible(settings.Config.Bind_To)
@@ -61,7 +61,7 @@ class LLMNR(BaseRequestHandler):  # LLMNR Server class
 
             if settings.Config.AnalyzeMode:
                 LineHeader = "[Analyze mode: LLMNR]"
-                print color("%s Request by %s for %s, ignoring" % (LineHeader, self.client_address[0], Name), 2, 1)
+                print(color("%s Request by %s for %s, ignoring" % (LineHeader, self.client_address[0], Name), 2, 1))
                                 SavePoisonersToDb({
                                        'Poisoner': 'LLMNR', 
                                        'SentToIp': self.client_address[0], 
@@ -73,7 +73,7 @@ class LLMNR(BaseRequestHandler):  # LLMNR Server class
                 Buffer.calculate()
                 soc.sendto(str(Buffer), self.client_address)
                 LineHeader = "[*] [LLMNR]"
-                print color("%s  Poisoned answer sent to %s for name %s" % (LineHeader, self.client_address[0], Name), 2, 1)
+                print(color("%s  Poisoned answer sent to %s for name %s" % (LineHeader, self.client_address[0], Name), 2, 1))
                                 SavePoisonersToDb({
                                        'Poisoner': 'LLMNR', 
                                        'SentToIp': self.client_address[0], 
@@ -81,5 +81,5 @@ class LLMNR(BaseRequestHandler):  # LLMNR Server class
                                        'AnalyzeMode': '0',
                                           })
             if Finger is not None:
-                print text("[FINGER] OS Version     : %s" % color(Finger[0], 3))
-                print text("[FINGER] Client Version : %s" % color(Finger[1], 3))
+                print(text("[FINGER] OS Version     : %s" % color(Finger[0], 3)))
+                print(text("[FINGER] Client Version : %s" % color(Finger[1], 3)))
