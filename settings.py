@@ -74,7 +74,7 @@ class Settings:
             sys.exit(-1)
 
         # Config parsing
-        config = ConfigParser.ConfigParser()
+        config = configparser.ConfigParser()
         config.read(os.path.join(self.ResponderPATH, 'Responder.conf'))
 
         # Servers
