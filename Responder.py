@@ -17,7 +17,10 @@
 import optparse
 import ssl
 
-from socketserver import TCPServer, UDPServer, ThreadingMixIn
+try:
+    from SocketServer import TCPServer, UDPServer, ThreadingMixIn
+except ImportError:
+    from socketserver import TCPServer, UDPServer, ThreadingMixIn
 from threading import Thread
 from utils import *
 import struct

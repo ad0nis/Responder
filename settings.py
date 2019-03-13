@@ -15,7 +15,10 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 import utils
-import configparser
+try:
+    import ConfigParser as configparser
+except ImportError:
+    import configparser
 import subprocess
 
 from utils import *
