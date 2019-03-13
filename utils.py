@@ -54,8 +54,8 @@ def color(txt, code = 1, modifier = 0):
     return "\033[%d;3%dm%s\033[0m" % (modifier, code, txt)
 
 def text(txt):
-        stripcolors = re.sub(r'\x1b\[([0-9,A-Z]{1,2}(;[0-9]{1,2})?(;[0-9]{3})?)?[m|K]?', '', txt)
-        logging.info(stripcolors)
+    stripcolors = re.sub(r'\x1b\[([0-9,A-Z]{1,2}(;[0-9]{1,2})?(;[0-9]{3})?)?[m|K]?', '', txt)
+    logging.info(stripcolors)
     if os.name == 'nt':
         return txt
     return '\r' + re.sub(r'\[([^]]*)\]', "\033[1;34m[\\1]\033[0m", txt)
@@ -69,7 +69,6 @@ def IsOnTheSameSubnet(ip, net):
     return (ipaddr & mask) == (netaddr & mask)
 
 def RespondToThisIP(ClientIp):
-
     if ClientIp.startswith('127.0.0.'):
         return False
     elif settings.Config.AutoIgnore and ClientIp in settings.Config.AutoIgnoreList:
@@ -190,11 +189,11 @@ def SaveToDb(result):
         cursor.commit()
 
         if settings.Config.CaptureMultipleHashFromSameHost:
-        with open(logfile,"a") as outf:
-            if len(result['cleartext']):  # If we obtained cleartext credentials, write them to file
-                outf.write('%s:%s\n' % (result['user'].encode('utf8', 'replace'), result['cleartext'].encode('utf8', 'replace')))
-            else:  # Otherwise, write JtR-style hash string to file
-                outf.write(result['fullhash'].encode('utf8', 'replace') + '\n')
+            with open(logfile,"a") as outf:
+                if len(result['cleartext']):  # If we obtained cleartext credentials, write them to file
+                    outf.write('%s:%s\n' % (result['user'].encode('utf8', 'replace'), result['cleartext'].encode('utf8', 'replace')))
+                else:  # Otherwise, write JtR-style hash string to file
+                    outf.write(result['fullhash'].encode('utf8', 'replace') + '\n')
 
     if not count or settings.Config.Verbose:  # Print output
         if len(result['client']):
