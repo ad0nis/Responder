@@ -29,7 +29,7 @@ def RandomChallenge():
        NumChal = '%016x' % getrandbits(16 * 4)
        Challenge = ''
        for i in range(0, len(NumChal),2):
-       Challenge += NumChal[i:i+2].decode("hex")
+           Challenge += NumChal[i:i+2].decode("hex")
        return Challenge
     else:
        return settings.Config.Challenge
