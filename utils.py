@@ -25,14 +25,14 @@ import datetime
 
 def RandomChallenge():
     if settings.Config.NumChal == "random":
-       from random import getrandbits
-       NumChal = '%016x' % getrandbits(16 * 4)
-       Challenge = ''
-       for i in range(0, len(NumChal),2):
-           Challenge += NumChal[i:i+2].decode("hex")
-       return Challenge
+        from random import getrandbits
+        NumChal = '%016x' % getrandbits(16 * 4)
+        Challenge = ''
+        for i in range(0, len(NumChal),2):
+            Challenge += NumChal[i:i+2].decode("hex")
+        return Challenge
     else:
-       return settings.Config.Challenge
+        return settings.Config.Challenge
 
 def HTTPCurrentDate():
     Date = datetime.datetime.utcnow().strftime('%a, %d %b %Y %H:%M:%S GMT')
@@ -93,10 +93,10 @@ def RespondToThisHost(ClientIp, Name):
     return RespondToThisIP(ClientIp) and RespondToThisName(Name)
 
 def RespondWithIPAton():
-       if settings.Config.ExternalIP:
-               return settings.Config.ExternalIPAton
-       else:
-               return settings.Config.IP_aton
+    if settings.Config.ExternalIP:
+        return settings.Config.ExternalIPAton
+    else:
+        return settings.Config.IP_aton
 
 def OsInterfaceIsSupported():
     if settings.Config.Interface != "Not set":
@@ -155,7 +155,6 @@ def CreateResponderDb():
         cursor.close()
 
 def SaveToDb(result):
-
     for k in [ 'module', 'type', 'client', 'hostname', 'user', 'cleartext', 'hash', 'fullhash' ]:
         if not k in result:
             result[k] = ''
@@ -231,7 +230,6 @@ def SaveToDb(result):
     cursor.close()
 
 def SavePoisonersToDb(result):
-
     for k in [ 'Poisoner', 'SentToIp', 'ForName', 'AnalyzeMode' ]:
         if not k in result:
             result[k] = ''
@@ -240,7 +238,7 @@ def SavePoisonersToDb(result):
     cursor.text_factory = sqlite3.Binary  # We add a text factory to support different charsets
     res = cursor.execute("SELECT COUNT(*) AS count FROM Poisoned WHERE Poisoner=? AND SentToIp=? AND ForName=? AND AnalyzeMode=?", (result['Poisoner'], result['SentToIp'], result['ForName'], result['AnalyzeMode']))
     (count,) = res.fetchone()
-        
+
     if not count:
         cursor.execute("INSERT INTO Poisoned VALUES(datetime('now'), ?, ?, ?, ?)", (result['Poisoner'], result['SentToIp'], result['ForName'], result['AnalyzeMode']))
         cursor.commit()
