@@ -350,13 +350,13 @@ def StartupMessage():
 
     if settings.Config.Upstream_Proxy:
         print('    %-27s' % "Upstream Proxy" + color('[%s]' % settings.Config.Upstream_Proxy, 5, 1))
-    if len(settings.Config.RespondTo):
+    if len(list(settings.Config.RespondTo)):
         print('    %-27s' % "Respond To" + color(str(settings.Config.RespondTo), 5, 1))
-    if len(settings.Config.RespondToName):
+    if len(list(settings.Config.RespondToName)):
         print('    %-27s' % "Respond To Names" + color(str(settings.Config.RespondToName), 5, 1))
-    if len(settings.Config.DontRespondTo):
+    if len(list(settings.Config.DontRespondTo)):
         print('    %-27s' % "Don't Respond To" + color(str(settings.Config.DontRespondTo), 5, 1))
-    if len(settings.Config.DontRespondToName):
+    if len(list(settings.Config.DontRespondToName)):
         print('    %-27s' % "Don't Respond To Names" + color(str(settings.Config.DontRespondToName), 5, 1))
     print("\n\n")
 
