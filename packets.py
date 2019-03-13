@@ -57,7 +57,7 @@ class NBT_Ans(Packet):
     def calculate(self,data):
         self.fields["Tid"] = data[0:2]
         self.fields["NbtName"] = data[12:46]
-                self.fields["IP"] = RespondWithIPAton()
+        self.fields["IP"] = RespondWithIPAton()
 
 # DNS Answer Packet
 class DNS_Ans(Packet):
@@ -83,7 +83,7 @@ class DNS_Ans(Packet):
     def calculate(self,data):
         self.fields["Tid"] = data[0:2]
         self.fields["QuestionName"] = ''.join(data[12:].split('\x00')[:1])
-                self.fields["IP"] = RespondWithIPAton()
+        self.fields["IP"] = RespondWithIPAton()
         self.fields["IPLen"] = struct.pack(">h",len(self.fields["IP"]))
 
 # LLMNR Answer Packet
@@ -111,7 +111,7 @@ class LLMNR_Ans(Packet):
     ])
 
     def calculate(self):
-                self.fields["IP"] = RespondWithIPAton()
+        self.fields["IP"] = RespondWithIPAton()
         self.fields["IPLen"] = struct.pack(">h",len(self.fields["IP"]))
         self.fields["AnswerNameLen"] = struct.pack(">h",len(self.fields["AnswerName"]))[1]
         self.fields["QuestionNameLen"] = struct.pack(">h",len(self.fields["QuestionName"]))[1]
@@ -1533,37 +1533,37 @@ class SMB2Session1Data(Packet):
                 #Packet Struct len
         self.fields["Len"] = struct.pack("<h",len(StructLen)+1)
         self.fields["SecBlobLen"] = struct.pack("<H", len(AsnLen+CalculateSecBlob))
-                self.fields["SecBlobOffSet"] = struct.pack("<h",len(StructLen)+64)
+        self.fields["SecBlobOffSet"] = struct.pack("<h",len(StructLen)+64)
 
         ###### ASN Stuff
-                if len(CalculateSecBlob) > 255:
-           self.fields["Tag3ASNIdLen"] = struct.pack(">H", len(CalculateSecBlob))
-                else:
-                   self.fields["Tag3ASNIdLenOfLen"] = "\x81"
-           self.fields["Tag3ASNIdLen"] = struct.pack(">B", len(CalculateSecBlob))
+        if len(CalculateSecBlob) > 255:
+            self.fields["Tag3ASNIdLen"] = struct.pack(">H", len(CalculateSecBlob))
+        else:
+            self.fields["Tag3ASNIdLenOfLen"] = "\x81"
+            self.fields["Tag3ASNIdLen"] = struct.pack(">B", len(CalculateSecBlob))
 
-                if len(AsnLen+CalculateSecBlob)-3 > 255:
+        if len(AsnLen+CalculateSecBlob)-3 > 255:
            self.fields["ChoiceTagASNIdLen"] = struct.pack(">H", len(AsnLen+CalculateSecBlob)-4)
-                else:
-                   self.fields["ChoiceTagASNLenOfLen"] = "\x81"
-           self.fields["ChoiceTagASNIdLen"] = struct.pack(">B", len(AsnLen+CalculateSecBlob)-3)
+        else:
+            self.fields["ChoiceTagASNLenOfLen"] = "\x81"
+            self.fields["ChoiceTagASNIdLen"] = struct.pack(">B", len(AsnLen+CalculateSecBlob)-3)
 
-                if len(AsnLen+CalculateSecBlob)-7 > 255:
-           self.fields["NegTokenTagASNIdLen"] = struct.pack(">H", len(AsnLen+CalculateSecBlob)-8)
-                else:
-                   self.fields["NegTokenTagASNLenOfLen"] = "\x81"
-           self.fields["NegTokenTagASNIdLen"] = struct.pack(">B", len(AsnLen+CalculateSecBlob)-7)
+        if len(AsnLen+CalculateSecBlob)-7 > 255:
+            self.fields["NegTokenTagASNIdLen"] = struct.pack(">H", len(AsnLen+CalculateSecBlob)-8)
+        else:
+            self.fields["NegTokenTagASNLenOfLen"] = "\x81"
+            self.fields["NegTokenTagASNIdLen"] = struct.pack(">B", len(AsnLen+CalculateSecBlob)-7)
                 
-                tag2length = CalculateSecBlob+str(self.fields["Tag3ASNId"])+str(self.fields["Tag3ASNIdLenOfLen"])+str(self.fields["Tag3ASNIdLen"])
+            tag2length = CalculateSecBlob+str(self.fields["Tag3ASNId"])+str(self.fields["Tag3ASNIdLenOfLen"])+str(self.fields["Tag3ASNIdLen"])
 
-                if len(tag2length) > 255:
-           self.fields["Tag2ASNIdLen"] = struct.pack(">H", len(tag2length))
-                else:
-                   self.fields["Tag2ASNIdLenOfLen"] = "\x81"
-           self.fields["Tag2ASNIdLen"] = struct.pack(">B", len(tag2length))
+        if len(tag2length) > 255:
+            self.fields["Tag2ASNIdLen"] = struct.pack(">H", len(tag2length))
+        else:
+            self.fields["Tag2ASNIdLenOfLen"] = "\x81"
+            self.fields["Tag2ASNIdLen"] = struct.pack(">B", len(tag2length))
 
-        self.fields["Tag1ASNIdLen"] = struct.pack(">B", len(str(self.fields["Tag1ASNId2"])+str(self.fields["Tag1ASNId2Len"])+str(self.fields["Tag1ASNId2Str"])))
-        self.fields["Tag1ASNId2Len"] = struct.pack(">B", len(str(self.fields["Tag1ASNId2Str"])))
+            self.fields["Tag1ASNIdLen"] = struct.pack(">B", len(str(self.fields["Tag1ASNId2"])+str(self.fields["Tag1ASNId2Len"])+str(self.fields["Tag1ASNId2Str"])))
+            self.fields["Tag1ASNId2Len"] = struct.pack(">B", len(str(self.fields["Tag1ASNId2Str"])))
 
         ###### Workstation Offset
         CalculateOffsetWorkstation = str(self.fields["NTLMSSPSignature"])+str(self.fields["NTLMSSPSignatureNull"])+str(self.fields["NTLMSSPMessageType"])+str(self.fields["NTLMSSPNtWorkstationLen"])+str(self.fields["NTLMSSPNtWorkstationMaxLen"])+str(self.fields["NTLMSSPNtWorkstationBuffOffset"])+str(self.fields["NTLMSSPNtNegotiateFlags"])+str(self.fields["NTLMSSPNtServerChallenge"])+str(self.fields["NTLMSSPNtReserved"])+str(self.fields["NTLMSSPNtTargetInfoLen"])+str(self.fields["NTLMSSPNtTargetInfoMaxLen"])+str(self.fields["NTLMSSPNtTargetInfoBuffOffset"])+str(self.fields["NegTokenInitSeqMechMessageVersionHigh"])+str(self.fields["NegTokenInitSeqMechMessageVersionLow"])+str(self.fields["NegTokenInitSeqMechMessageVersionBuilt"])+str(self.fields["NegTokenInitSeqMechMessageVersionReserved"])+str(self.fields["NegTokenInitSeqMechMessageVersionNTLMType"])
