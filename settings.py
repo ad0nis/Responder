@@ -179,7 +179,7 @@ class Settings:
         if self.HtmlToInject is None:
             self.HtmlToInject = ''
 
-        self.Bind_To         = utils.FindLocalIP(self.Interface, self.OURIP)
+            self.Bind_To         = utils.FindLocalIP(self.Interface, self.OURIP)
 
         if self.Interface == "ALL":
             self.Bind_To_ALL  = True
