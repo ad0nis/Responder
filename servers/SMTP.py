@@ -51,7 +51,7 @@ class ESMTP(BaseRequestHandler):
                         'fullhash': Username+":"+Password,
                         })
 
-                                else:
+                else:
                     self.request.send(str(SMTPAUTH1()))
                     data = self.request.recv(1024)
                 
@@ -80,5 +80,5 @@ class ESMTP(BaseRequestHandler):
                         })
 
         except Exception:
-                        raise
+            raise
             pass
