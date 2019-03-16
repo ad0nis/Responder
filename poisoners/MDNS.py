@@ -16,7 +16,11 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 import struct
 
-from SocketServer import BaseRequestHandler
+try:
+    from SocketServer import BaseRequestHandler
+except ModuleNotFoundError:
+    from socketserver import BaseRequestHandler
+
 from packets import MDNS_Ans
 from utils import *
 
@@ -50,13 +54,13 @@ class MDNS(BaseRequestHandler):
 
         if settings.Config.AnalyzeMode:  # Analyze Mode
             if Parse_IPV6_Addr(data):
-                print text('[Analyze mode: MDNS] Request by %-15s for %s, ignoring' % (color(self.client_address[0], 3), color(Request_Name, 3)))
-                                SavePoisonersToDb({
-                                       'Poisoner': 'MDNS', 
-                                       'SentToIp': self.client_address[0], 
-                                       'ForName': Request_Name,
-                                       'AnalyzeMode': '1',
-                                          })
+                print(text('[Analyze mode: MDNS] Request by %-15s for %s, ignoring' % (color(self.client_address[0], 3), color(Request_Name, 3))))
+                SavePoisonersToDb({
+                    'Poisoner': 'MDNS', 
+                    'SentToIp': self.client_address[0], 
+                    'ForName': Request_Name,
+                    'AnalyzeMode': '1',
+                    })
         else:  # Poisoning Mode
             if Parse_IPV6_Addr(data):
 
@@ -65,10 +69,10 @@ class MDNS(BaseRequestHandler):
                 Buffer.calculate()
                 soc.sendto(str(Buffer), (MADDR, MPORT))
 
-                print color('[*] [MDNS] Poisoned answer sent to %-15s for name %s' % (self.client_address[0], Request_Name), 2, 1)
-                                SavePoisonersToDb({
-                                       'Poisoner': 'MDNS', 
-                                       'SentToIp': self.client_address[0], 
-                                       'ForName': Request_Name,
-                                       'AnalyzeMode': '0',
-                                          })
+                print(color('[*] [MDNS] Poisoned answer sent to %-15s for name %s' % (self.client_address[0], Request_Name), 2, 1))
+                SavePoisonersToDb({
+                    'Poisoner': 'MDNS', 
+                    'SentToIp': self.client_address[0], 
+                    'ForName': Request_Name,
+                    'AnalyzeMode': '0',
+                    })
