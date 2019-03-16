@@ -25,8 +25,8 @@ from utils import *
 
 def GrabUserAgent(data):
     UserAgent = re.findall(r'(?<=User-Agent: )[^\r]*', data)
-        if UserAgent:
-           print text("[Proxy-Auth] %s" % color("User-Agent        : "+UserAgent[0], 2))
+    if UserAgent:
+        print text("[Proxy-Auth] %s" % color("User-Agent        : "+UserAgent[0], 2))
 
 def GrabCookie(data):
     Cookie = re.search(r'(Cookie:*.\=*)[^\r\n]*', data)
@@ -34,8 +34,8 @@ def GrabCookie(data):
     if Cookie:
         Cookie = Cookie.group(0).replace('Cookie: ', '')
         if len(Cookie) > 1:
-                        if settings.Config.Verbose:
-                    print text("[Proxy-Auth] %s" % color("Cookie           : "+Cookie, 2))
+            if settings.Config.Verbose:
+                print text("[Proxy-Auth] %s" % color("Cookie           : "+Cookie, 2))
 
         return Cookie
     return False
@@ -45,8 +45,8 @@ def GrabHost(data):
 
     if Host:
         Host = Host.group(0).replace('Host: ', '')
-                if settings.Config.Verbose:
-                print text("[Proxy-Auth] %s" % color("Host             : "+Host, 2))
+        if settings.Config.Verbose:
+            print text("[Proxy-Auth] %s" % color("Host             : "+Host, 2))
 
         return Host
     return False
@@ -67,18 +67,18 @@ def PacketSequence(data, client, Challenge):
             return str(Buffer_Ans)
         if Packet_NTLM == "\x03":
             NTLM_Auth = b64decode(''.join(NTLM_Auth))
-                        ParseHTTPHash(NTLM_Auth, Challenge, client, "Proxy-Auth")
-                        GrabUserAgent(data)
-                        GrabCookie(data)
-                        GrabHost(data)
-                    return False #Send a RST with SO_LINGER when close() is called (see Responder.py)
+            ParseHTTPHash(NTLM_Auth, Challenge, client, "Proxy-Auth")
+            GrabUserAgent(data)
+            GrabCookie(data)
+            GrabHost(data)
+            return False #Send a RST with SO_LINGER when close() is called (see Responder.py)
         else:
-                    return False
+            return False
 
     elif Basic_Auth:
-                GrabUserAgent(data)
-                GrabCookie(data)
-                GrabHost(data)
+        GrabUserAgent(data)
+        GrabCookie(data)
+        GrabHost(data)
         ClearText_Auth = b64decode(''.join(Basic_Auth))
         SaveToDb({
             'module': 'Proxy-Auth', 
@@ -105,12 +105,11 @@ class Proxy_Auth(SocketServer.BaseRequestHandler):
 
     def handle(self):
         try:
-                    Challenge = RandomChallenge()
-                    for x in range(2):
-                        data = self.request.recv(4096)
-                        self.request.send(PacketSequence(data, self.client_address[0], Challenge))
+            Challenge = RandomChallenge()
+            for x in range(2):
+                data = self.request.recv(4096)
+                self.request.send(PacketSequence(data, self.client_address[0], Challenge))
 
         except:
-                    pass
-
+            pass
 
