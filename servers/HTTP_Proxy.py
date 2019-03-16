@@ -14,10 +14,16 @@
 #
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
-import urlparse
+try:
+    import urlparse
+except ModuleNotFoundError:
+    import urllib.parse as urlparse
 import select
 import zlib
-import BaseHTTPServer
+try:
+    import BaseHTTPServer
+except ModuleNotFoundError:
+    import http.server as BaseHTTPServer
 
 from servers.HTTP import RespondWithFile
 from utils import *
@@ -56,7 +62,7 @@ def InjectData(data, client, req_uri):
 
             if HasBody and len(settings.Config.HtmlToInject) > 2 and not req_uri.endswith('.js'):
                 if settings.Config.Verbose:
-                    print text("[PROXY] Injecting into HTTP Response: %s" % color(settings.Config.HtmlToInject, 3, 1))
+                    print(text("[PROXY] Injecting into HTTP Response: %s" % color(settings.Config.HtmlToInject, 3, 1)))
 
                 Content = Content.replace(HasBody[0], '%s\n%s' % (HasBody[0], settings.Config.HtmlToInject))
 
@@ -67,7 +73,7 @@ def InjectData(data, client, req_uri):
         data = Headers +'\r\n\r\n'+ Content
     else:
         if settings.Config.Verbose:
-            print text("[PROXY] Returning unmodified HTTP response")
+            print(text("[PROXY] Returning unmodified HTTP response"))
     return data
 
 class ProxySock:
@@ -99,14 +105,14 @@ class ProxySock:
                 # Replace the socket by a connection to the proxy
                 self.socket = socket.socket(family, socktype, proto)
                 self.socket.connect(sockaddr)
-            except socket.error, msg:
+            except socket.error as msg:
                 if self.socket:
                     self.socket.close()
                 self.socket = None
                 continue
             break
         if not self.socket :
-            raise socket.error, msg
+            raise socket.error(msg)
         
         # Ask him to create a tunnel connection to the target host/port
         self.socket.send(
@@ -121,7 +127,7 @@ class ProxySock:
         
         # Not 200 ?
         if parts[1] != "200":
-            print color("[!] Error response from upstream proxy: %s" % resp, 1)
+            print(color("[!] Error response from upstream proxy: %s" % resp, 1))
             pass
 
     # Wrap all methods of inner socket, without any change
@@ -200,7 +206,7 @@ class HTTP_Proxy(BaseHTTPServer.BaseHTTPRequestHandler):
     def handle(self):
         (ip, port) =  self.client_address
         if settings.Config.Verbose:
-            print text("[PROXY] Received connection from %s" % self.client_address[0])
+            print(text("[PROXY] Received connection from %s" % self.client_address[0]))
         self.__base_handle()
 
     def _connect_to(self, netloc, soc):
@@ -210,7 +216,7 @@ class HTTP_Proxy(BaseHTTPServer.BaseHTTPRequestHandler):
         else:
             host_port = netloc, 80
         try: soc.connect(host_port)
-        except socket.error, arg:
+        except socket.error as arg:
             try: msg = arg[1]
             except: msg = arg
             self.send_error(404, msg)
@@ -276,9 +282,9 @@ class HTTP_Proxy(BaseHTTPServer.BaseHTTPRequestHandler):
                 Cookie = self.headers['Cookie'] if "Cookie" in self.headers else ''
 
                 if settings.Config.Verbose:
-                    print text("[PROXY] Client        : %s" % color(self.client_address[0], 3))
-                    print text("[PROXY] Requested URL : %s" % color(self.path, 3))
-                    print text("[PROXY] Cookie        : %s" % Cookie)
+                    print(text("[PROXY] Client        : %s" % color(self.client_address[0], 3)))
+                    print(text("[PROXY] Requested URL : %s" % color(self.path, 3)))
+                    print(text("[PROXY] Cookie        : %s" % Cookie))
 
                 self.headers['Connection'] = 'close'
                 del self.headers['Proxy-Connection']
@@ -326,7 +332,7 @@ class HTTP_Proxy(BaseHTTPServer.BaseHTTPRequestHandler):
                             data = i.recv(4096)
 
                             if self.command == "POST" and settings.Config.Verbose:
-                                print text("[PROXY] POST Data     : %s" % data)
+                                print(text("[PROXY] POST Data     : %s" % data))
                         except:
                             pass
                     if data:
