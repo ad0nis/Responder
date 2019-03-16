@@ -15,7 +15,12 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 import struct
-from SocketServer import BaseRequestHandler, StreamRequestHandler
+
+try:
+    from SocketServer import BaseRequestHandler, StreamRequestHandler
+except ModuleNotFoundError:
+    from socketserver import BaseRequestHandler, StreamRequestHandler
+
 from base64 import b64decode
 from utils import *
 
@@ -79,7 +84,7 @@ def GrabCookie(data, host):
     if Cookie:
         Cookie = Cookie.group(0).replace('Cookie: ', '')
         if len(Cookie) > 1 and settings.Config.Verbose:
-            print text("[HTTP] Cookie           : %s " % Cookie)
+            print(text("[HTTP] Cookie           : %s " % Cookie))
         return Cookie
     return False
 
@@ -89,7 +94,7 @@ def GrabHost(data, host):
     if Host:
         Host = Host.group(0).replace('Host: ', '')
         if settings.Config.Verbose:
-            print text("[HTTP] Host             : %s " % color(Host, 3))
+            print(text("[HTTP] Host             : %s " % color(Host, 3)))
         return Host
     return False
 
@@ -99,18 +104,18 @@ def GrabReferer(data, host):
     if Referer:
         Referer = Referer.group(0).replace('Referer: ', '')
         if settings.Config.Verbose:
-            print text("[HTTP] Referer         : %s " % color(Referer, 3))
+            print(text("[HTTP] Referer         : %s " % color(Referer, 3)))
         return Referer
     return False
 
 def SpotFirefox(data):
     UserAgent = re.findall(r'(?<=User-Agent: )[^\r]*', data)
     if UserAgent:
-                print text("[HTTP] %s" % color("User-Agent        : "+UserAgent[0], 2))
+                print(text("[HTTP] %s" % color("User-Agent        : "+UserAgent[0], 2)))
                 IsFirefox = re.search('Firefox', UserAgent[0])
                 if IsFirefox:
-                        print color("[WARNING]: Mozilla doesn't switch to fail-over proxies (as it should) when one's failing.", 1)
-                        print color("[WARNING]: The current WPAD script will cause disruption on this host. Sending a dummy wpad script (DIRECT connect)", 1)
+                        print(color("[WARNING]: Mozilla doesn't switch to fail-over proxies (as it should) when one's failing.", 1))
+                        print(color("[WARNING]: The current WPAD script will cause disruption on this host. Sending a dummy wpad script (DIRECT connect)", 1))
                         return True
                 else:
                    return False
@@ -155,7 +160,7 @@ def RespondWithFile(client, filename, dlname=None):
         Buffer = ServeHtmlFile(Payload = ServeFile(filename))
 
     Buffer.calculate()
-    print text("[HTTP] Sending file %s to %s" % (filename, client))
+    print(text("[HTTP] Sending file %s to %s" % (filename, client)))
     return str(Buffer)
 
 def GrabURL(data, host):
@@ -164,13 +169,13 @@ def GrabURL(data, host):
     POSTDATA = re.findall(r'(?<=\r\n\r\n)[^*]*', data)
 
     if GET and settings.Config.Verbose:
-        print text("[HTTP] GET request from: %-15s  URL: %s" % (host, color(''.join(GET), 5)))
+        print(text("[HTTP] GET request from: %-15s  URL: %s" % (host, color(''.join(GET), 5))))
 
     if POST and settings.Config.Verbose:
-        print text("[HTTP] POST request from: %-15s  URL: %s" % (host, color(''.join(POST), 5)))
+        print(text("[HTTP] POST request from: %-15s  URL: %s" % (host, color(''.join(POST), 5))))
 
         if len(''.join(POSTDATA)) > 2:
-            print text("[HTTP] POST Data: %s" % ''.join(POSTDATA).strip())
+            print(text("[HTTP] POST Data: %s" % ''.join(POSTDATA).strip()))
 
 # Handle HTTP packet sequence.
 def PacketSequence(data, client, Challenge):
@@ -187,8 +192,8 @@ def PacketSequence(data, client, Challenge):
 
     WPAD_Custom = WpadCustom(data, client)
         # Webdav
-        if ServeOPTIONS(data):
-                return ServeOPTIONS(data)
+    if ServeOPTIONS(data):
+        return ServeOPTIONS(data)
 
     if NTLM_Auth:
         Packet_NTLM = b64decode(''.join(NTLM_Auth))[8:9]
@@ -207,14 +212,14 @@ def PacketSequence(data, client, Challenge):
 
         if Packet_NTLM == "\x03":
             NTLM_Auth = b64decode(''.join(NTLM_Auth))
-                        if IsWebDAV(data):
-                                 module = "WebDAV"
-                        else:
-                                 module = "HTTP"
+            if IsWebDAV(data):
+                module = "WebDAV"
+            else:
+                module = "HTTP"
             ParseHTTPHash(NTLM_Auth, Challenge, client, module)
 
             if settings.Config.Force_WPAD_Auth and WPAD_Custom:
-                print text("[HTTP] WPAD (auth) file sent to %s" % client)
+                print(text("[HTTP] WPAD (auth) file sent to %s" % client))
 
                 return WPAD_Custom
             else:
@@ -240,7 +245,7 @@ def PacketSequence(data, client, Challenge):
 
         if settings.Config.Force_WPAD_Auth and WPAD_Custom:
             if settings.Config.Verbose:
-                print text("[HTTP] WPAD (auth) file sent to %s" % client)
+                print(text("[HTTP] WPAD (auth) file sent to %s" % client))
 
             return WPAD_Custom
         else:
@@ -251,12 +256,12 @@ def PacketSequence(data, client, Challenge):
         if settings.Config.Basic:
             Response = IIS_Basic_401_Ans()
             if settings.Config.Verbose:
-                print text("[HTTP] Sending BASIC authentication request to %s" % client)
+                print(text("[HTTP] Sending BASIC authentication request to %s" % client))
 
         else:
             Response = IIS_Auth_401_Ans()
             if settings.Config.Verbose:
-                print text("[HTTP] Sending NTLM authentication request to %s" % client)
+                print(text("[HTTP] Sending NTLM authentication request to %s" % client))
 
         return str(Response)
 
@@ -302,7 +307,7 @@ class HTTP(BaseRequestHandler):
                     self.request.send(Buffer)
                     self.request.close()
                     if settings.Config.Verbose:
-                        print text("[HTTP] WPAD (no auth) file sent to %s" % self.client_address[0])
+                        print(text("[HTTP] WPAD (no auth) file sent to %s" % self.client_address[0]))
 
                 else:
                     Buffer = PacketSequence(data,self.client_address[0], Challenge)
@@ -310,4 +315,3 @@ class HTTP(BaseRequestHandler):
         
         except socket.error:
             pass
-            
