@@ -46,7 +46,7 @@ class DNS(BaseRequestHandler):
                 soc.sendto(str(buff), self.client_address)
 
                 ResolveName = re.sub(r'[^0-9a-zA-Z]+', '.', buff.fields["QuestionName"])
-                print color("[*] [DNS] Poisoned answer sent to: %-15s  Requested name: %s" % (self.client_address[0], ResolveName), 2, 1)
+                print(color("[*] [DNS] Poisoned answer sent to: %-15s  Requested name: %s" % (self.client_address[0], ResolveName), 2, 1))
 
         except Exception:
             pass
@@ -67,7 +67,7 @@ class DNSTCP(BaseRequestHandler):
                 self.request.send(str(buff))
 
                 ResolveName = re.sub('[^0-9a-zA-Z]+', '.', buff.fields["QuestionName"])
-                print color("[*] [DNS-TCP] Poisoned answer sent to: %-15s  Requested name: %s" % (self.client_address[0], ResolveName), 2, 1)
+                print(color("[*] [DNS-TCP] Poisoned answer sent to: %-15s  Requested name: %s" % (self.client_address[0], ResolveName), 2, 1))
 
         except Exception:
             pass
