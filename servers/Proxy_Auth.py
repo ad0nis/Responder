@@ -17,16 +17,19 @@
 try:
     import SocketServer
 except ModuleNotFoundError:
-    import socketserver
+    import socketserver as SocketServer
 
-from HTTP import ParseHTTPHash
+try:
+    from HTTP import ParseHTTPHash
+except ModuleNotFoundError:
+    from .HTTP import ParseHTTPHash
 from packets import *
 from utils import *
 
 def GrabUserAgent(data):
     UserAgent = re.findall(r'(?<=User-Agent: )[^\r]*', data)
     if UserAgent:
-        print text("[Proxy-Auth] %s" % color("User-Agent        : "+UserAgent[0], 2))
+        print(text("[Proxy-Auth] %s" % color("User-Agent        : "+UserAgent[0], 2)))
 
 def GrabCookie(data):
     Cookie = re.search(r'(Cookie:*.\=*)[^\r\n]*', data)
@@ -35,7 +38,7 @@ def GrabCookie(data):
         Cookie = Cookie.group(0).replace('Cookie: ', '')
         if len(Cookie) > 1:
             if settings.Config.Verbose:
-                print text("[Proxy-Auth] %s" % color("Cookie           : "+Cookie, 2))
+                print(text("[Proxy-Auth] %s" % color("Cookie           : "+Cookie, 2)))
 
         return Cookie
     return False
@@ -46,7 +49,7 @@ def GrabHost(data):
     if Host:
         Host = Host.group(0).replace('Host: ', '')
         if settings.Config.Verbose:
-            print text("[Proxy-Auth] %s" % color("Host             : "+Host, 2))
+            print(text("[Proxy-Auth] %s" % color("Host             : "+Host, 2)))
 
         return Host
     return False
@@ -58,7 +61,7 @@ def PacketSequence(data, client, Challenge):
         Packet_NTLM = b64decode(''.join(NTLM_Auth))[8:9]
         if Packet_NTLM == "\x01":
             if settings.Config.Verbose:
-                print text("[Proxy-Auth] Sending NTLM authentication request to %s" % client)
+                print(text("[Proxy-Auth] Sending NTLM authentication request to %s" % client))
 
             Buffer = NTLM_Challenge(ServerChallenge=Challenge)
             Buffer.calculate()
@@ -93,7 +96,7 @@ def PacketSequence(data, client, Challenge):
         if settings.Config.Basic:
             Response = WPAD_Basic_407_Ans()
             if settings.Config.Verbose:
-                print text("[Proxy-Auth] Sending BASIC authentication request to %s" % client)
+                print(text("[Proxy-Auth] Sending BASIC authentication request to %s" % client))
 
         else:
             Response = WPAD_Auth_407_Ans()
