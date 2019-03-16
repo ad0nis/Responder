@@ -53,7 +53,7 @@ class NBTNS(BaseRequestHandler):
 
             if settings.Config.AnalyzeMode:  # Analyze Mode
                 LineHeader = "[Analyze mode: NBT-NS]"
-                print color("%s Request by %s for %s, ignoring" % (LineHeader, self.client_address[0], Name), 2, 1)
+                print(color("%s Request by %s for %s, ignoring" % (LineHeader, self.client_address[0], Name), 2, 1))
                                 SavePoisonersToDb({
                                        'Poisoner': 'NBT-NS', 
                                        'SentToIp': self.client_address[0], 
@@ -66,7 +66,7 @@ class NBTNS(BaseRequestHandler):
                 socket.sendto(str(Buffer), self.client_address)
                 LineHeader = "[*] [NBT-NS]"
 
-                print color("%s Poisoned answer sent to %s for name %s (service: %s)" % (LineHeader, self.client_address[0], Name, NBT_NS_Role(data[43:46])), 2, 1)
+                print(color("%s Poisoned answer sent to %s for name %s (service: %s)" % (LineHeader, self.client_address[0], Name, NBT_NS_Role(data[43:46])), 2, 1))
 
                                 SavePoisonersToDb({
                                        'Poisoner': 'NBT-NS', 
@@ -76,5 +76,5 @@ class NBTNS(BaseRequestHandler):
                                           })
 
             if Finger is not None:
-                print text("[FINGER] OS Version     : %s" % color(Finger[0], 3))
-                print text("[FINGER] Client Version : %s" % color(Finger[1], 3))
+                print(text("[FINGER] OS Version     : %s" % color(Finger[0], 3)))
+                print text(("[FINGER] Client Version : %s" % color(Finger[1], 3)))
