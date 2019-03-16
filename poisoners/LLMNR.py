@@ -18,7 +18,10 @@ import struct
 import fingerprint
 
 from packets import LLMNR_Ans
-from SocketServer import BaseRequestHandler
+try:
+    from SocketServer import BaseRequestHandler
+except ModuleNotFoundError:
+    from socketserver import BaseRequestHandler
 from utils import *
 
 
