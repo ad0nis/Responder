@@ -21,59 +21,59 @@ from packets import SMTPGreeting, SMTPAUTH, SMTPAUTH1, SMTPAUTH2
 
 class ESMTP(BaseRequestHandler):
 
-	def handle(self):
-		try:
-			self.request.send(str(SMTPGreeting()))
-			data = self.request.recv(1024)
+    def handle(self):
+        try:
+            self.request.send(str(SMTPGreeting()))
+            data = self.request.recv(1024)
 
-			if data[0:4] == "EHLO" or data[0:4] == "ehlo":
-				self.request.send(str(SMTPAUTH()))
-				data = self.request.recv(1024)
+            if data[0:4] == "EHLO" or data[0:4] == "ehlo":
+                self.request.send(str(SMTPAUTH()))
+                data = self.request.recv(1024)
 
-			if data[0:4] == "AUTH":
-				AuthPlain = re.findall(r'(?<=AUTH PLAIN )[^\r]*', data)
-				if AuthPlain:
-					User = filter(None, b64decode(AuthPlain[0]).split('\x00'))
-					Username = User[0]
-					Password = User[1]
+            if data[0:4] == "AUTH":
+                AuthPlain = re.findall(r'(?<=AUTH PLAIN )[^\r]*', data)
+                if AuthPlain:
+                    User = filter(None, b64decode(AuthPlain[0]).split('\x00'))
+                    Username = User[0]
+                    Password = User[1]
 
-					SaveToDb({
-						'module': 'SMTP', 
-						'type': 'Cleartext', 
-						'client': self.client_address[0], 
-						'user': Username, 
-						'cleartext': Password, 
-						'fullhash': Username+":"+Password,
-						})
+                    SaveToDb({
+                        'module': 'SMTP', 
+                        'type': 'Cleartext', 
+                        'client': self.client_address[0], 
+                        'user': Username, 
+                        'cleartext': Password, 
+                        'fullhash': Username+":"+Password,
+                        })
 
                                 else:
-					self.request.send(str(SMTPAUTH1()))
-					data = self.request.recv(1024)
-				
-					if data:
-						try:
-							User = filter(None, b64decode(data).split('\x00'))
-							Username = User[0]
-							Password = User[1]
-						except:
-							Username = b64decode(data)
+                    self.request.send(str(SMTPAUTH1()))
+                    data = self.request.recv(1024)
+                
+                    if data:
+                        try:
+                            User = filter(None, b64decode(data).split('\x00'))
+                            Username = User[0]
+                            Password = User[1]
+                        except:
+                            Username = b64decode(data)
 
-							self.request.send(str(SMTPAUTH2()))
-							data = self.request.recv(1024)
+                            self.request.send(str(SMTPAUTH2()))
+                            data = self.request.recv(1024)
 
-							if data:
-								try: Password = b64decode(data)
-								except: Password = data
+                            if data:
+                                try: Password = b64decode(data)
+                                except: Password = data
 
-						SaveToDb({
-							'module': 'SMTP', 
-							'type': 'Cleartext', 
-							'client': self.client_address[0], 
-							'user': Username, 
-							'cleartext': Password, 
-							'fullhash': Username+":"+Password,
-						})
+                        SaveToDb({
+                            'module': 'SMTP', 
+                            'type': 'Cleartext', 
+                            'client': self.client_address[0], 
+                            'user': Username, 
+                            'cleartext': Password, 
+                            'fullhash': Username+":"+Password,
+                        })
 
-		except Exception:
+        except Exception:
                         raise
-			pass
+            pass
