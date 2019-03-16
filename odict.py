@@ -88,9 +88,18 @@ class OrderedDict(dict, DictMixin):
     pop = DictMixin.pop
     values = DictMixin.values
     items = DictMixin.items
-    iterkeys = DictMixin.iterkeys
-    itervalues = DictMixin.itervalues
-    iteritems = DictMixin.iteritems
+    try:
+        iterkeys = DictMixin.iterkeys
+    except AttributeError:
+        iterkeys = DictMixin.keys
+    try:
+        itervalues = DictMixin.itervalues
+    except AttributeError:
+        itervalues = DictMixin.values
+    try:
+        iteritems = DictMixin.iteritems
+    except AttributeError:
+        iteritems = DictMixin.items
 
     def __repr__(self):
         if not self:
