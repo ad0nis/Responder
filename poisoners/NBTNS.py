@@ -17,7 +17,11 @@
 import fingerprint
 
 from packets import NBT_Ans
-from SocketServer import BaseRequestHandler
+try:
+    from SocketServer import BaseRequestHandler
+except ModuleNotFoundError:
+    from socketserver import BaseRequestHandler
+
 from utils import *
 
 # Define what are we answering to.
