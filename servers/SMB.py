@@ -16,7 +16,10 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 from random import randrange
 from packets import SMBHeader, SMBNegoAnsLM, SMBNegoKerbAns, SMBSession1Data, SMBSession2Accept, SMBSessEmpty, SMBTreeData, SMB2Header, SMB2NegoAns, SMB2Session1Data, SMB2Session2Data
-from SocketServer import BaseRequestHandler
+try:
+    from SocketServer import BaseRequestHandler
+except ModuleNotFoundError:
+    from socketserver import BaseRequestHandler
 from utils import *
 import struct
 import re

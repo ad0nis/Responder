@@ -16,7 +16,12 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 from utils import *
 from base64 import b64decode
-from SocketServer import BaseRequestHandler
+
+try:
+    from SocketServer import BaseRequestHandler
+except ModuleNotFoundError:
+    from socketserver import BaseRequestHandler
+
 from packets import SMTPGreeting, SMTPAUTH, SMTPAUTH1, SMTPAUTH2
 
 class ESMTP(BaseRequestHandler):

@@ -14,7 +14,11 @@
 #
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
-import SocketServer
+try:
+    import SocketServer
+except ModuleNotFoundError:
+    import socketserver
+
 from HTTP import ParseHTTPHash
 from packets import *
 from utils import *
