@@ -32,8 +32,8 @@ def ParseSearch(data):
         return str(LDAPSearchSupportedMechanismsPacket(MessageIDASNStr=data[8:9],MessageIDASN2Str=data[8:9]))
 
 def ParseLDAPHash(data,client, Challenge):  #Parse LDAP NTLMSSP v1/v2
-        SSPIStart  = data.find('NTLMSSP')
-        SSPIString = data[SSPIStart:]
+    SSPIStart  = data.find('NTLMSSP')
+    SSPIString = data[SSPIStart:]
     LMhashLen    = struct.unpack('<H',data[SSPIStart+14:SSPIStart+16])[0]
     LMhashOffset = struct.unpack('<H',data[SSPIStart+16:SSPIStart+18])[0]
     LMHash       = SSPIString[LMhashOffset:LMhashOffset+LMhashLen].encode("hex").upper()
@@ -79,7 +79,7 @@ def ParseLDAPHash(data,client, Challenge):  #Parse LDAP NTLMSSP v1/v2
         })
 
     if LMhashLen < 2 and settings.Config.Verbose:
-        print text("[LDAP] Ignoring anonymous NTLM authentication")
+        print(text("[LDAP] Ignoring anonymous NTLM authentication"))
 
 def ParseNTLM(data,client, Challenge):
     if re.search('(NTLMSSP\x00\x01\x00\x00\x00)', data):
@@ -124,15 +124,15 @@ def ParseLDAPPacket(data, client, Challenge):
             return Buffer
 
         elif settings.Config.Verbose:
-            print text('[LDAP] Operation not supported')
+            print(text('[LDAP] Operation not supported'))
 
     if data[5:6] == '\x60':
-                UserLen = struct.unpack("<b",data[11:12])[0]
-                UserString = data[12:12+UserLen]
-                PassLen = struct.unpack("<b",data[12+UserLen+1:12+UserLen+2])[0]
-                PassStr = data[12+UserLen+2:12+UserLen+3+PassLen]
-                if settings.Config.Verbose:
-            print text('[LDAP] Attempting to parse an old simple Bind request.')
+        UserLen = struct.unpack("<b",data[11:12])[0]
+        UserString = data[12:12+UserLen]
+        PassLen = struct.unpack("<b",data[12+UserLen+1:12+UserLen+2])[0]
+        PassStr = data[12+UserLen+2:12+UserLen+3+PassLen]
+        if settings.Config.Verbose:
+            print(text('[LDAP] Attempting to parse an old simple Bind request.'))
         SaveToDb({
             'module': 'LDAP',
             'type': 'Cleartext',
@@ -147,12 +147,12 @@ class LDAP(BaseRequestHandler):
         try:
             self.request.settimeout(0.4)
             data = self.request.recv(8092)
-                        Challenge = RandomChallenge()
-                        for x in range(5):
+            Challenge = RandomChallenge()
+            for x in range(5):
                 Buffer = ParseLDAPPacket(data,self.client_address[0], Challenge)
                 if Buffer:
                     self.request.send(Buffer)
                 data = self.request.recv(8092)
         except:
-                        pass
+            pass
 
